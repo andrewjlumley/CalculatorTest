@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Calculator</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td colspan="4"><input type="text" id="display"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="1" onclick="Capture('1')" /></td>
+            <td><input type="button" value="2" onclick="Capture('2')" /></td>
+            <td><input type="button" value="3" onclick="Capture('3')" /></td>
+            <td><input type="button" value="C" onclick="Clear()" /></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="4" onclick="Capture('4')" /></td>
+            <td><input type="button" value="5" onclick="Capture('5')" /></td>
+            <td><input type="button" value="6" onclick="Capture('6')" /></td>
+            <td />
+        </tr>
+        <tr>
+            <td><input type="button" value="7" onclick="Capture('7')" /></td>
+            <td><input type="button" value="8" onclick="Capture('8')" /></td>
+            <td><input type="button" value="9" onclick="Capture('9')" /></td>
+            <td><input type="button" value="-" onclick="Capture('-')" /></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="0" onclick="Capture('0')" /></td>
+            <td />
+            <td><input type="button" value="=" onclick="Complete()"> </td>
+            <td><input type="button" value="+" onclick="Capture('+')" /></td>
+        </tr>
+    </table>
+    <script>
+       async function Capture(value) {
+            var display = document.getElementById("display");
+
+            if (value == "+" || value == "-")
+                display.value = await Evaluate(display.value);
+
+            display.value += value;
+        }
+
+        async function Complete() {
+            var display = document.getElementById("display");
+            display.value = await Evaluate(display.value);
+        }
+
+        function Clear() {
+            document.getElementById("display").value = "";
+        }
+
+        async function Evaluate(response) {
+            var additionOperators = response.split('+');
+            if (additionOperators.length == 2)
+                return await Calculate("add", additionOperators[0], additionOperators[1]);
+
+            var subtractionOperators = response.split('-');
+            if (subtractionOperators.length == 2)
+                return await Calculate("subtract", subtractionOperators[0], subtractionOperators[1]);
+
+            return response;
+        }
+
+        async function Calculate(operator, start, amount) {
+            return await fetch("https://localhost:7159/api/simplecalculator/" + operator, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'text/plain',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'start': start, 'amount': amount })
+            })
+            .then(response => response.text())
+            .then(response => JSON.parse(response))
+            .then(response => {
+                return response['result'];
+            });
+        };
+    </script>
+</body>
+</html>
