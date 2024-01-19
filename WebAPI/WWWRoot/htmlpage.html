@@ -6,7 +6,7 @@
 <body>
     <table>
         <tr>
-            <td colspan="4"><input type="text" id="display"></td>
+            <td colspan="4"><input type="text" readonly id="display"></td>
         </tr>
         <tr>
             <td><input type="button" value="1" onclick="Capture('1')" /></td>
@@ -29,43 +29,87 @@
         <tr>
             <td><input type="button" value="0" onclick="Capture('0')" /></td>
             <td />
-            <td><input type="button" value="=" onclick="Complete()"> </td>
+            <td><input type="button" value="=" onclick="Capture('=')"> </td>
             <td><input type="button" value="+" onclick="Capture('+')" /></td>
         </tr>
     </table>
     <script>
-       async function Capture(value) {
-            var display = document.getElementById("display");
+        var display = document.getElementById("display");
 
-            if (value == "+" || value == "-")
-                display.value = await Evaluate(display.value);
+        var start = ""
+        var operator = "";
+        var amount = "";
+        Clear();
 
-            display.value += value;
-        }
-
-        async function Complete() {
-            var display = document.getElementById("display");
-            display.value = await Evaluate(display.value);
+        async function RefreshDisplay() {
+            display.value = start + operator + amount;
+            console.log(`Start=${start}, Operator=${operator}, Amount=${amount}`);
         }
 
         function Clear() {
-            document.getElementById("display").value = "";
+            SetStart("0");
+            RefreshDisplay();
         }
 
-        async function Evaluate(response) {
-            var additionOperators = response.split('+');
-            if (additionOperators.length == 2)
-                return await Calculate("add", additionOperators[0], additionOperators[1]);
-
-            var subtractionOperators = response.split('-');
-            if (subtractionOperators.length == 2)
-                return await Calculate("subtract", subtractionOperators[0], subtractionOperators[1]);
-
-            return response;
+        async function SetStart(value) {
+            start = value;
+            operator = "";
+            amount = "";
         }
 
-        async function Calculate(operator, start, amount) {
-            return await fetch("https://localhost:7159/api/simplecalculator/" + operator, {
+        async function Capture(key) {
+
+            // Remove leading zero
+            if (start == "0") {
+                start = "";
+            }
+
+            // If user pressed equals then calculate
+            if (key == "=") {
+
+                // Only calculate if everything available
+                if (operator != "" && start != "" && amount != "") {
+                    SetStart(await Calculate());
+                }
+            }
+
+            // Did user pressed plus or minus?
+            else if (key == "+" || key == "-") {
+
+                // If start not set then move amount into start
+                if (start == "" && amount != "") {
+                    start = amount;
+                    amount = "";
+                }
+
+                // This must be the operator if start set
+                if (start != "" && operator == "") {
+                    operator = key;
+                }
+
+                // If everything set then calculate
+                if (operator != "" && start != "" && amount != "") {
+                    SetStart(await Calculate());
+                    operator = key;
+                }
+
+                // Otherwise is this a sign?
+                else if (amount == "" && operator != key) {
+                    amount += key;
+                }
+            }
+
+            // Otherwise, concatenate  to amount
+            else {
+                amount += key;
+            }
+
+            RefreshDisplay();
+        }
+
+        async function Calculate() {
+            var method = operator == "-" ? "subtract" : "add";
+            return await fetch(("https://localhost:7159/api/simplecalculator/" + method), {
                 method: 'POST',
                 headers: {
                     'Accept': 'text/plain',
