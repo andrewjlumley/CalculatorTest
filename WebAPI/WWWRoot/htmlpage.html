@@ -2,44 +2,84 @@
 <html>
 <head>
     <title>Simple Calculator</title>
+    <style>
+        .styled {
+            border: 0;
+            line-height: 2.5;
+            padding: 0 20px;
+            font-size: 1rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 1px 1px 1px #000;
+            border-radius: 10px;
+            background-color: rgba(220, 0, 0, 1);
+            background-image: linear-gradient( to top left, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0) );
+            box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.6), inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .styled:hover {
+            background-color: rgba(255, 0, 0, 1);
+        }
+
+        .styled:active {
+            box-shadow: inset -2px -2px 3px rgba(255, 255, 255, 0.6), inset 2px 2px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        input {
+            width: 100%;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        button {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <table>
-        <tr>
-            <td colspan="4"><input type="text" readonly id="display"></td>
-        </tr>
-        <tr>
-            <td><input type="button" value="1" onclick="Capture('1')" /></td>
-            <td><input type="button" value="2" onclick="Capture('2')" /></td>
-            <td><input type="button" value="3" onclick="Capture('3')" /></td>
-            <td><input type="button" value="C" onclick="Clear()" /></td>
-        </tr>
-        <tr>
-            <td><input type="button" value="4" onclick="Capture('4')" /></td>
-            <td><input type="button" value="5" onclick="Capture('5')" /></td>
-            <td><input type="button" value="6" onclick="Capture('6')" /></td>
-            <td />
-        </tr>
-        <tr>
-            <td><input type="button" value="7" onclick="Capture('7')" /></td>
-            <td><input type="button" value="8" onclick="Capture('8')" /></td>
-            <td><input type="button" value="9" onclick="Capture('9')" /></td>
-            <td><input type="button" value="-" onclick="Capture('-')" /></td>
-        </tr>
-        <tr>
-            <td><input type="button" value="0" onclick="Capture('0')" /></td>
-            <td />
-            <td><input type="button" value="=" onclick="Capture('=')"> </td>
-            <td><input type="button" value="+" onclick="Capture('+')" /></td>
-        </tr>
-    </table>
+    <p>Calculator</p>
+    <dialog data-modal>
+        <table>
+            <tr>
+                <td colspan="4"><input type="text" readonly id="display"></td>
+            </tr>
+            <tr>
+                <td><button class="favorite styled" type="button" onclick="Capture('1')">1</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('2')">2</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('3')">3</button></td>
+                <td><button class="favorite styled"type="button" onclick="Clear()">C</button></td>
+            </tr>
+            <tr>
+                <td><button class="favorite styled"type="button" onclick="Capture('4')">4</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('5')">5</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('6')">6</button></td>
+                <td />
+            </tr>
+            <tr>
+                <td><button class="favorite styled"type="button" onclick="Capture('7')">7</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('8')">8</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('9')">9</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('-')">-</button></td>
+            </tr>
+            <tr>
+                <td><button class="favorite styled"type="button" onclick="Capture('0')">0</button></td>
+                <td />
+                <td><button class="favorite styled"type="button" onclick="Capture('=')">=</button></td>
+                <td><button class="favorite styled"type="button" onclick="Capture('+')">+</button></td>
+            </tr>
+        </table>
+    </dialog>
     <script>
-        var display = document.getElementById("display");
+        const display = document.getElementById("display");
 
         var start = ""
         var operator = "";
         var amount = "";
         Clear();
+ 
+        const modal = document.querySelector("[data-modal]");
+        modal.showModal();
 
         async function RefreshDisplay() {
             display.value = start + operator + amount;
