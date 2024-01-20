@@ -76,7 +76,7 @@ async function Capture(key) {
 
 async function Calculate() {
     var method = operator == "-" ? "subtract" : "add";
-    return await fetch(("https://localhost:7159/api/simplecalculator/" + method), {
+    return await fetch((`/api/simplecalculator/${method}`), {
         method: 'POST',
         headers: {
             'Accept': 'text/plain',
